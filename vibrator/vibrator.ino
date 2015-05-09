@@ -1,28 +1,39 @@
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   vibratorInit();
 }
 
-int state = LOW;
-unsigned long previousMillis = 0;
+int state = LOW, inByte = -1;
+unsigned long prev = 0;
 const long interval = 500;
 
 void vibratorInit(void) {
-  pinMode(10, OUTPUT);      //10, 11 are pins os vibrator 
+  pinMode(10, OUTPUT);      // 10, 11 are pins for vibrator 
   pinMode(11, OUTPUT);
 }
 
 void loop() {
-  unsigned long currentMillis = millis();
-  if(currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;   
-    if (state == LOW)
-      state = HIGH;
-    else
-      state = LOW;
+  bluetoothCheck();
+  
+  if(inByte == 1) // Right turn
+    vibrate();
+}
 
-    digitalWrite(10, state);
-    digitalWrite(11, state);
+void bluetoothCheck(void) {
+  if(Serial.available() > 0) {
+    inByte = Serial.read();
+    
+    Serial.println(inByte, DEC); // For testing purposes
   }
 }
 
+void vibrate(void) {
+  unsigned long runtime = 0;
+  digitalWrite(10, HIGH);
+  digitalWrite(11, HIGH);
+  while(runtime < interval) {
+    runtime = millis();
+  }
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+}
