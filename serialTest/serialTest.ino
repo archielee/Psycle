@@ -33,3 +33,4 @@ void vibrate(void) {
   digitalWrite(12, LOW);
   state = 0;
 }
+
