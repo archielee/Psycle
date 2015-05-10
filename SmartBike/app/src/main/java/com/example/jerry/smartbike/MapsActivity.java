@@ -12,6 +12,9 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,23 +26,34 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener,
+        GoogleMap.OnMapClickListener{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
     private LocationRequest mLocationRequest;
     private NotificationReceiver notificationReciever;
+    private double lat,lon;
+    private Marker marker;
+    private Marker empty;
+
+    private EditText txtDes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        lat = 0;
+        lon = 0;
+
         setUpMapIfNeeded();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -56,7 +70,12 @@ public class MapsActivity extends FragmentActivity implements
 
         notificationReciever = new NotificationReceiver();
         IntentFilter filter = new IntentFilter(".NOTIFICATION_LISTENER_EXAMPLE");
-        registerReceiver(notificationReciever,filter);
+        registerReceiver(notificationReciever, filter);
+        txtDes = (EditText) findViewById(R.id.addrDes);
+        mMap.setOnMapClickListener(this);
+        marker = mMap.addMarker(new MarkerOptions()
+                                    .visible(false)
+                                    .position(new LatLng(0,0)));
     }
 
     @Override
@@ -118,16 +137,15 @@ public class MapsActivity extends FragmentActivity implements
     private void setUpMap() {
     }
 
-    @Override
+        @Override
     public void onConnected(Bundle bundle) {
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         if (location == null) {
 
-        }
-        else {
+        } else {
             handleNewLocation(location);
         }
     }
@@ -154,23 +172,48 @@ public class MapsActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
         Intent i = new Intent(".NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
-        i.putExtra("command","list");
+        i.putExtra("command", "list");
         sendBroadcast(i);
     }
 
     public void btnClick(View view) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=University of Toronto&mode=b");
+
+        String addr = txtDes.getText().toString();
+        if(addr.equals("")){
+            addr = "University of Toronto";
+        }
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + addr + "&mode=b");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);
     }
-}
 
-class NotificationReceiver extends BroadcastReceiver{
+    public void btnMarker(View view) {
+
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Double.toString(lat)+"," + Double.toString(lon) + "&mode=b");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+    }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        String temp = intent.getStringExtra("data");
-        Log.d("NOTIF",temp);
+    public void onMapClick(LatLng pt) {
+        lat = pt.latitude;
+        lon = pt.longitude;
+        marker.setPosition(pt);
+
+        if(!marker.isVisible())
+            marker.setVisible(true);
+
+    }
+
+
+    class NotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String temp = intent.getStringExtra("data");
+            Log.d("NOTIF", temp);
+        }
     }
 }

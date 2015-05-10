@@ -9,19 +9,7 @@
     android:id="@+id/map"
     tools:context=".MapsActivity"
     android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_marginBottom="100dp"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:inputType="textPostalAddress"
-        android:ems="10"
-        android:id="@+id/addrSrc"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="50dp"
-        android:layout_marginRight="100dp"
-        android:text="Start" />
+    android:layout_marginBottom="50dp"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -29,23 +17,28 @@
         android:inputType="textPostalAddress"
         android:ems="10"
         android:id="@+id/addrDes"
-        android:layout_above="@id/addrSrc"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="100dp"
-        android:text="Destination" />
+        android:layout_marginRight="150dp"
+        android:hint="Destination" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:text="GO"
         android:id="@+id/btnGo"
         android:onClick="btnClick"
-        android:layout_alignTop="@+id/addrSrc"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="300dp"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignTop="@+id/addrDes"
+        android:layout_toStartOf="@+id/btnMarker" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Marker"
+        android:id="@+id/btnMarker"
+        android:onClick="btnMarker"
+        android:layout_alignTop="@+id/btnGo"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>
