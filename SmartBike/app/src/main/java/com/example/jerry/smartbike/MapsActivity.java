@@ -1,5 +1,6 @@
 package com.example.jerry.smartbike;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
     private LocationRequest mLocationRequest;
+    private NotificationReceiver notificationReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +53,16 @@ public class MapsActivity extends FragmentActivity implements
                 .setInterval(3 * 1000)        // 1 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
+
+        notificationReciever = new NotificationReceiver();
+        IntentFilter filter = new IntentFilter(".NOTIFICATION_LISTENER_EXAMPLE");
+        registerReceiver(notificationReciever,filter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(notificationReciever);
     }
 
     @Override
@@ -146,6 +153,9 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
+        Intent i = new Intent(".NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
+        i.putExtra("command","list");
+        sendBroadcast(i);
     }
 
     public void btnClick(View view) {
@@ -156,3 +166,11 @@ public class MapsActivity extends FragmentActivity implements
     }
 }
 
+class NotificationReceiver extends BroadcastReceiver{
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String temp = intent.getStringExtra("data");
+        Log.d("NOTIF",temp);
+    }
+}
