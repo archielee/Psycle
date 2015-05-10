@@ -43,7 +43,7 @@ void setup()
   // set the data rate for the SoftwareSerial port
   BT.begin(9600);
   // Send test message to other device
-  BT.println("Hello from Arduino");
+  BT.println("Hello");
   pinMode(4,OUTPUT);
   pinMode(5,OUTPUT);
   pinMode(led, OUTPUT);     
@@ -117,74 +117,89 @@ void loop() {
         count++;
       }
     }
-    else
-      count=0;
+//    else
+//      count=0;
   }
   else
   {
-   switch (deviceState)
-   {
-     case 1://Driving state
-         if (BT.available())
-      // if text arrived in from BT serial...
-      {
-        int iniTime = millis();
-        int currTime = millis();
-        a=(BT.read());
-        if (a=='L')
-        {
-          for (int i = 0; i<10; i++)
+    switch (deviceState)
+    {
+      case 1://Driving state
+        if (BT.available()) { // if text arrived in from BT serial...
+          a=(BT.read());
+          Serial.println(a);
+          if (a=='L')
           {
-            redLEDs(1);
-            digitalWrite(2, HIGH);
+            for (int i = 0; i<10; i++)
+            {
+              redLEDs(1);
+              digitalWrite(2, HIGH);
+              delay(400);
+              clearLEDs();
+              digitalWrite(2, LOW);
+              delay(400);   
+            }       
+          }
+          else if (a=='R')
+          {
+            for (int i = 0; i<10; i++)
+            {
+            redLEDs(2);
+            digitalWrite(7, HIGH);
             delay(400);
             clearLEDs();
-            digitalWrite(2, LOW);
-            delay(400);   
-          }       
-        }
-        else if (a=='R')
-        {
-          for (int i = 0; i<10; i++)
-          {
-          redLEDs(2);
-          digitalWrite(7, HIGH);
-          delay(400);
-          clearLEDs();
-          digitalWrite(7, LOW);
-          delay(400);
+            digitalWrite(7, LOW);
+            delay(400);
+            }
           }
-        }
-      }
-     break;   
+          else if (a=='C')
+          {
+            BT.println("K"); 
+          }
+       }
+       break;   
      case 2: // parked the vehicle
-       irrecv.resume();
-       BT.println("locked");
-       do{
-       a=(BT.read());// you doont have to send out mshs every hour
-       BT.println("locked");
-       if (irrecv.decode(&results));
-       delay(10);
-       }while(analogRead(A0) < 620 && analogRead(A1) < 550 && analogRead(A0) > 550 && analogRead(A1) >510);
-       BT.println("unlocked");
-       count = 0;
+       //irrecv.resume();
+       Serial.println("entered case 2");
+       if (BT.available()>0)
+       {
+         a=(BT.read());
+         BT.println("2"); 
+         do{
+           a=(BT.read());
+           if (a == 'c')
+           {
+             
+           }           
+         a=(BT.read());// you dont have to send out msgs every hour
+         BT.println("k");//locked
+         if (irrecv.decode(&results));
+         delay(10);
+         }while(analogRead(A0) < 630 && analogRead(A1) < 560 && analogRead(A0) > 540 && analogRead(A1) >500);
+         BT.println("u"); //unlocked
+         count = 0;
+       }
        delay(10);
        break;
      case 3:
+       Serial.println("entered case 3");
        digitalWrite(13,HIGH);
+       BT.println('x'); 
        if (irrecv.decode(&results));
        while(!(results.value == 0xFF22DD));
+       count = 0;
+       digitalWrite(13,LOW);
        break;
      case 4:
        toneAC(440); 
        delay(100);
        noToneAC() ;
-        delay(100);     
-      count = 0;
+       delay(100);     
+       count = 0;
        break;
      default:
        break;
-   }
- }
+    }
+  }
 
 }

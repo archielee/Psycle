@@ -22,8 +22,8 @@
 #include <Adafruit_NeoPixel.h>
 #include "WS2812_Definitions.h"
 
-#define PIN1 5
-#define PIN2 4
+#define PIN1 3
+#define PIN2 2
 #define LED_COUNT 5
 
 // Create an instance of the Adafruit_NeoPixel class called "leds".

@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-SoftwareSerial BT(10, 11); 
+SoftwareSerial BT(11,12); 
 
 // creates a "virtual" serial port/UART
 // connect BT module TX to D10
@@ -34,7 +34,7 @@ void loop()
     }
     if (a=='?')
     {
-      BT.println("Send '1' to turn LED on");
+      BT.println("Send '1' to turna LED on");
       BT.println("Send '2' to turn LED on");
     }   
     // you can add more "if" statements with other characters to add more commands
