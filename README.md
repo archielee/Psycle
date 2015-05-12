@@ -6,7 +6,7 @@ Edison board. It provides turn-by-turn navigation using Google Maps without the 
 vibrating motors and also controls turn signalling via Bluetooth communication. A basic anti-theft system is in place
 as well as an LED screen which displays vital information for cyclists.
 
-All Arduino code can be found under the SmartBike_System folder. The Android application can be found in the SmartBike
+All Arduino code can be found under the Smart_bike_main folder. The Android application can be found in the SmartBike
 folder. LED screen support for the Intel Edison can be found inside the oled folder.
 
 Created by Archie Lee, Jerry Li, Toni Ogunmade for WearHacks Toronto 2015.
